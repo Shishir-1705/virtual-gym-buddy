@@ -1,0 +1,6 @@
+{
+  "name": "Virtual Gym Buddy",
+  "description": "An interactive AI-powered gym companion and mental motivator. Tracks your physical workouts, emotional states, nutrition, and provides real-time coaching and sentiment-aware guidance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

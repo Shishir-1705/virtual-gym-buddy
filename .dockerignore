@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+build/
+coverage/
+
+# Git metadata
+.git/
+.github/
+
+# Environment files and credentials
+.env*
+!.env.example
+
+# Firebase Admin Service Account & Credentials
+service-account*.json
+*serviceAccount*.json
+*service-account*.json
+*credentials*.json
+*.serviceAccountKey.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+
+# Backups and exported user records
+*backup*.json
+*export*.json
+backups/
+exports/
+
+# Firebase & local emulator cache/logs
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Logs & temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.temp/
+temp/
+tmp/
+.cache/
+
+# Operating system & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local helper scripts
+powershell.cmd

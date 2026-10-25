@@ -1,0 +1,63 @@
+# =============================================================================
+# Virtual Gym Buddy — Render Free Blueprint Specification
+# =============================================================================
+# Deploy as a Render Free Web Service with zero-budget (₹0).
+# In Render dashboard: New -> Blueprint -> Connect Repository.
+# =============================================================================
+
+services:
+  - type: web
+    name: virtual-gym-buddy
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/server.cjs
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      # -----------------------------------------------------------------------
+      # Operational & Security Settings
+      # -----------------------------------------------------------------------
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: ENABLE_HSTS
+        value: "false"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_GUEST_MAX
+        value: "10"
+      - key: RATE_LIMIT_AUTH_MAX
+        value: "60"
+
+      # -----------------------------------------------------------------------
+      # Server Secrets & Cloud Credentials (Configure in Render Dashboard)
+      # -----------------------------------------------------------------------
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      # Optional: Option 1 for Firebase Admin on Render
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      # Optional: Option 2 for Firebase Admin (Secret Files: /etc/secrets/...)
+      # - key: FIREBASE_SERVICE_ACCOUNT_PATH
+      #   value: /etc/secrets/serviceAccountKey.json
+
+      # -----------------------------------------------------------------------
+      # Public Client Build Variables (Required during buildCommand)
+      # -----------------------------------------------------------------------
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+      - key: VITE_USE_FIREBASE_EMULATOR
+        value: "false"

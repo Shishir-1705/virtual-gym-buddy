@@ -1,0 +1,64 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: virtual-gym-buddy
+  labels:
+    cloud.google.com/location: us-central1
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        # Autoscaling constraints: scale to zero when idle; cap max instances to maintain rate limit boundaries
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "3"
+        # Node.js Express handles concurrent async connections cleanly
+        container.googleapis.com/concurrency: "80"
+    spec:
+      # Least-privilege service account for Cloud Run runtime
+      serviceAccountName: virtual-gym-buddy-runner@PROJECT_ID.iam.gserviceaccount.com
+      containers:
+      - image: us-central1-docker.pkg.dev/PROJECT_ID/virtual-gym-buddy/app:latest
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "512Mi"
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: TRUST_PROXY
+          value: "true"
+        - name: FIREBASE_PROJECT_ID
+          value: "PROJECT_ID"
+        - name: ENABLE_HSTS
+          value: "true"
+        - name: RATE_LIMIT_WINDOW_MS
+          value: "900000"
+        - name: RATE_LIMIT_GUEST_MAX
+          value: "10"
+        - name: RATE_LIMIT_AUTH_MAX
+          value: "60"
+        # Secret injected via Google Cloud Secret Manager
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: GEMINI_API_KEY
+              key: latest
+        # Container probes using dedicated, non-leaking health endpoints
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 3
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 15
+          failureThreshold: 3
